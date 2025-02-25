@@ -2,17 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnvironmentInteractionState : MonoBehaviour
+public abstract class EnvironmentInteractionState : BaseState<EnvironmentInteractionStateMachine.EEnvironmentInteractionState>
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    protected EnvironmentInteractionContext Context;
 
-    // Update is called once per frame
-    void Update()
+    public EnvironmentInteractionState(EnvironmentInteractionContext context,
+        EnvironmentInteractionStateMachine.EEnvironmentInteractionState stateKey) : base(stateKey)
     {
+        Context = context;
         
     }
+    
+
 }

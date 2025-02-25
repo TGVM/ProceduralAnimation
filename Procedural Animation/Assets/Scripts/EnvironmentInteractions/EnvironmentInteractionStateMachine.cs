@@ -13,6 +13,8 @@ public class EnvironmentInteractionStateMachine : StateManager<EnvironmentIntera
         Reset,
     }
 
+    private EnvironmentInteractionContext _context;
+
     [SerializeField] private TwoBoneIKConstraint _leftIkConstraint;
     [SerializeField] private TwoBoneIKConstraint _rightIkConstraint;
     [SerializeField] private MultiRotationConstraint _leftMultiRotationConstraint;
@@ -23,6 +25,11 @@ public class EnvironmentInteractionStateMachine : StateManager<EnvironmentIntera
     private void Awake()
     {
         ValidateConstraints();
+
+        _context = new EnvironmentInteractionContext(_leftIkConstraint, _rightIkConstraint,
+            _leftMultiRotationConstraint, _rightMultiRotationConstraint,
+            _rigidbody, _rootCollider);
+        InitializeStates();
     }
 
     private void ValidateConstraints()
@@ -34,6 +41,18 @@ public class EnvironmentInteractionStateMachine : StateManager<EnvironmentIntera
         Assert.IsNotNull(_rigidbody, "RigidBody is not assigned.");
         Assert.IsNotNull(_rootCollider, "Root collider is not assigned.");
 
+    }
+
+    private void InitializeStates()
+    {
+        States.Add(EEnvironmentInteractionState.Reset, new ResetState(_context, EEnvironmentInteractionState.Reset));
+        States.Add(EEnvironmentInteractionState.Search, new SearchState(_context, EEnvironmentInteractionState.Search));
+        States.Add(EEnvironmentInteractionState.Approach, new ApproachState(_context, EEnvironmentInteractionState.Approach));
+        States.Add(EEnvironmentInteractionState.Rise, new RiseState(_context, EEnvironmentInteractionState.Rise));
+        States.Add(EEnvironmentInteractionState.Touch, new TouchState(_context, EEnvironmentInteractionState.Touch));
+    
+        CurrentState = States[EEnvironmentInteractionState.Reset];
+    
     }
 
 }
