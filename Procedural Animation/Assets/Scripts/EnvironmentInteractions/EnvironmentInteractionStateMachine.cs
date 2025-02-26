@@ -22,13 +22,24 @@ public class EnvironmentInteractionStateMachine : StateManager<EnvironmentIntera
     [SerializeField] private Rigidbody _rigidbody;
     [SerializeField] private CapsuleCollider _rootCollider;
 
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.red;
+        if (_context != null && _context.ClosestPointOnColliderFromShoulder != null)
+        {
+            Gizmos.DrawSphere(_context.ClosestPointOnColliderFromShoulder, .03f);
+        }
+    }
+
     private void Awake()
     {
         ValidateConstraints();
 
         _context = new EnvironmentInteractionContext(_leftIkConstraint, _rightIkConstraint,
             _leftMultiRotationConstraint, _rightMultiRotationConstraint,
-            _rigidbody, _rootCollider);
+            _rigidbody, _rootCollider, transform.root);
+
+        ConstructEnvironmentDetectionCollider();
         InitializeStates();
     }
 
@@ -53,6 +64,19 @@ public class EnvironmentInteractionStateMachine : StateManager<EnvironmentIntera
     
         CurrentState = States[EEnvironmentInteractionState.Reset];
     
+    }
+
+    private void ConstructEnvironmentDetectionCollider()
+    {
+        float wingspan = _rootCollider.height;
+
+        BoxCollider boxCollider = gameObject.AddComponent<BoxCollider>();
+        boxCollider.size = new Vector3(wingspan, wingspan, wingspan);
+        boxCollider.center = new Vector3(_rootCollider.center.x,
+            _rootCollider.center.y + (.25f * wingspan),
+            _rootCollider.center.z + (.5f * wingspan));
+        boxCollider.isTrigger = true;
+
     }
 
 }

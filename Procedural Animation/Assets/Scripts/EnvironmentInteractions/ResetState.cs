@@ -19,7 +19,8 @@ public class ResetState : EnvironmentInteractionState {
 
     public override EnvironmentInteractionStateMachine.EEnvironmentInteractionState GetNextState()
     {
-        return StateKey;
+        return EnvironmentInteractionStateMachine.EEnvironmentInteractionState.Search;
+        //return StateKey;
     }
 
     public override void OnTriggerEnter(Collider other)
@@ -32,6 +33,7 @@ public class ResetState : EnvironmentInteractionState {
 
     public override void OnTriggerExit(Collider other)
     {
+        ResetIkTargetPositionTracking(other);
     }
 
 }
