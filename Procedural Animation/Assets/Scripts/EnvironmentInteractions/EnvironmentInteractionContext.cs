@@ -11,13 +11,15 @@ public class EnvironmentInteractionContext : MonoBehaviour
         LEFT
     };
 
-     private TwoBoneIKConstraint _leftIkConstraint;
-     private TwoBoneIKConstraint _rightIkConstraint;
-     private MultiRotationConstraint _leftMultiRotationConstraint;
-     private MultiRotationConstraint _rightMultiRotationConstraint;
-     private Rigidbody _rigidbody;
-     private CapsuleCollider _rootCollider;
+    private TwoBoneIKConstraint _leftIkConstraint;
+    private TwoBoneIKConstraint _rightIkConstraint;
+    private MultiRotationConstraint _leftMultiRotationConstraint;
+    private MultiRotationConstraint _rightMultiRotationConstraint;
+    private Rigidbody _rigidbody;
+    private CapsuleCollider _rootCollider;
     private Transform _rootTransform;
+    private Vector3 _leftOriginalTargetPosition;
+    private Vector3 _rightOriginalTargetPosition;
 
     //constructor
     public EnvironmentInteractionContext(TwoBoneIKConstraint leftIkConstraint, TwoBoneIKConstraint rightIkConstraint, MultiRotationConstraint leftMultiRotationConstraint, MultiRotationConstraint rightMultiRotationConstraint, Rigidbody rigidbody, CapsuleCollider rootCollider, Transform rootTransform)
@@ -29,8 +31,12 @@ public class EnvironmentInteractionContext : MonoBehaviour
         _rigidbody = rigidbody;
         _rootCollider = rootCollider;
         _rootTransform = rootTransform;
+        _leftOriginalTargetPosition = leftIkConstraint.data.target.transform.localPosition;
+        _rightOriginalTargetPosition = rightIkConstraint.data.target.transform.localPosition;
+        OriginalTargetRotation = _leftIkConstraint.data.target.rotation;
 
         CharacterShoulderHeight = leftIkConstraint.data.root.transform.position.y;
+        SetCurrentSide(Vector3.positiveInfinity);
     }
 
     //Read-only properties
@@ -51,6 +57,10 @@ public class EnvironmentInteractionContext : MonoBehaviour
     public Transform CurrentShoulderTransform { get; private set; }
     public EBodySide CurrentBodySide { get; private set; }
     public Vector3 ClosestPointOnColliderFromShoulder { get; set; } = Vector3.positiveInfinity;
+    public float InteractionPointYOffset { get; set; } = 0;
+    public float ColliderCenterY { get; set; }
+    public Vector3 CurrentOriginalTargetPosition { get; private set; }
+    public Quaternion OriginalTargetRotation { get; private set; }
 
     public void SetCurrentSide(Vector3 positionToCheck)
     {
@@ -65,6 +75,7 @@ public class EnvironmentInteractionContext : MonoBehaviour
             CurrentBodySide = EBodySide.LEFT;
             CurrentIkConstraint = _leftIkConstraint;
             CurrentMultiRotationConstraint = _leftMultiRotationConstraint;
+            CurrentOriginalTargetPosition = _leftOriginalTargetPosition;
         }
         else
         {
@@ -72,6 +83,7 @@ public class EnvironmentInteractionContext : MonoBehaviour
             CurrentBodySide = EBodySide.RIGHT;
             CurrentIkConstraint = _rightIkConstraint;
             CurrentMultiRotationConstraint = _rightMultiRotationConstraint;
+            CurrentOriginalTargetPosition = _rightOriginalTargetPosition;
         }
 
         CurrentShoulderTransform = CurrentIkConstraint.data.root.transform;

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class SearchState : EnvironmentInteractionState {
+    public float _approachDistanceThreshold = 2.0f;
+
     public SearchState(EnvironmentInteractionContext context, EnvironmentInteractionStateMachine.EEnvironmentInteractionState estate) : base(context, estate)
     {
         EnvironmentInteractionContext Context = context;
@@ -21,6 +23,16 @@ public class SearchState : EnvironmentInteractionState {
 
     public override EnvironmentInteractionStateMachine.EEnvironmentInteractionState GetNextState()
     {
+        bool isCloseToTarget = Vector3.Distance(Context.ClosestPointOnColliderFromShoulder,
+            Context.RootTransform.position) < _approachDistanceThreshold;
+
+        bool isClosestPointOnColliderValid = Context.ClosestPointOnColliderFromShoulder != Vector3.positiveInfinity;
+
+        if(isCloseToTarget && isClosestPointOnColliderValid)
+        {
+            return EnvironmentInteractionStateMachine.EEnvironmentInteractionState.Approach;
+        }
+
         return StateKey;
     }
 

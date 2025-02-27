@@ -77,6 +77,7 @@ public class EnvironmentInteractionStateMachine : StateManager<EnvironmentIntera
             _rootCollider.center.z + (.5f * wingspan));
         boxCollider.isTrigger = true;
 
+        _context.ColliderCenterY = _rootCollider.center.y;
     }
 
 }
